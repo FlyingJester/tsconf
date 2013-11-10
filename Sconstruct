@@ -46,4 +46,4 @@ else:
 
 tsconf_files = ["tsconf-main.cpp"]
 
-tsconf = currentenv.Program('tsconf', tsconf_files)
+tsconf = currentenv.Program('tsconf', tsconf_files, LIBS="fltk")
