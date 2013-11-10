@@ -1,0 +1,49 @@
+import os
+import sys
+
+defaultenv	= Environment(ENV = os.environ)
+
+linuxenv	= defaultenv.Clone(tools = ['default', 'textfile'], CCFLAGS = "-Werror=return-type -Wno-unused-local-typedefs -Wall -Wno-pointer-arith -mtune=native -mfpmath=both -flto -O2 -funroll-loops -std=c++11 -Wcast-align -pg -g", LINKFLAGS = "-I./")
+
+windowsenv 	= defaultenv.Clone(CCFLAGS = "/O2 /EHsc")
+
+win32env	= windowsenv.Clone()
+win64env	= windowsenv.Clone()
+
+linux32env	= linuxenv.Clone()
+linux64env	= linuxenv.Clone()
+
+macintoshenv	= defaultenv.Clone()
+
+#set up the environment depending on platform. Mainly for installing libraries.
+v8name = ''
+bassname = ''
+arch = 'ia32'
+if sys.platform == 'win32' or sys.platform == 'win64':
+	v8name = 'v8.dll'
+	lib_install_dir = './bin/Release'
+	currentenv = win32env.Clone(LIBPATH=lib_install_dir)
+
+	graphicalg_name    = './bin/Release/graphicalg'
+	graphiccommon_name = './bin/Release/graphiccommon'
+	configmanager_name = './bin/Release/configmanager'
+
+else:
+	v8name = 'libv8.so'
+	graphicalg_name    = 'graphicalg'
+	graphiccommon_name = 'graphiccommon'
+	configmanager_name = 'configmanager'
+
+	if sys.platform == 'linux':
+		lib_install_dir = '/usr/lib/turbosphere'
+		currentenv = linux32env.Clone(LIBPATH=lib_install_dir)
+	else:
+		v8name = 'libv8.so'
+		lib_install_dir = '/usr/lib64/turbosphere'
+		currentenv = linux64env.Clone(LIBPATH=lib_install_dir)
+		arch = 'x64'
+
+
+tsconf_files = ["tsconf-main.cpp"]
+
+tsconf = currentenv.Program('tsconf', tsconf_files)
