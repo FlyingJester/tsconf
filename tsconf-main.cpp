@@ -2,19 +2,28 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Group.H>
+#include <FL/Fl_Tabs.H>
 #include <FL/fl_ask.H>
 
 #include "tsconf-main.h"
 #include "tsconf-graphics.h"
+#include "tsconf-configuration.h"
 
-#include "configuration.h"
-
+#include "t5.h"
 
 void Quit(DEF_FL_ARGS){
     exit(0);
 }
 
 void DoNothing(DEF_FL_ARGS){
+
+}
+
+void SaveAll(DEF_FL_ARGS){
+    tsconf::GameConfig *conf = tsconf::GetGameConfig();
+
+    auto error = conf->Save(NULL);
+
 
 }
 
@@ -33,7 +42,9 @@ void SetAllDefault(DEF_FL_ARGS){
 void createMenuBar(){
     static Fl_Menu_Item menuItems[] = {
         {"&File", 0, 0, 0, FL_SUBMENU},
-        {"&Save\t", FL_COMMAND + 's', (Fl_Callback *)DoNothing, 0},
+        {"&Open...\t", FL_COMMAND + 'o', (Fl_Callback *)DoNothing, 0},
+        {"&Save\t", FL_COMMAND + 's', (Fl_Callback *)SaveAll, 0},
+        {"Save &As...\t", FL_SHIFT + FL_COMMAND + 's', (Fl_Callback *)DoNothing, 0},
         {"&Revert\t", FL_COMMAND + 'z', (Fl_Callback *)DoNothing, 0},
         {"E&xit\t", FL_COMMAND + 'q', (Fl_Callback *)Quit, 0},
         {0},
@@ -50,10 +61,30 @@ void createMenuBar(){
 
 
 int main(int argc, char *argv[]){
+
+    T5_init(1, "./");
+
+    tsconf::GameConfig *config = tsconf::GetGameConfig();
+
+    tsconf::error::LoadError err = config->Load();
+
+    if(err){
+        fprintf(stderr, "Could not open engine.ini file. Error was %i.\n", err);
+    }
+
+    printf("%s\n", config->sgmname);
+
+
     Fl_Window confWindow(tsconf::windowWidth, tsconf::windowHeight, tsconf::windowTitle);
     confWindow.begin();
         createMenuBar();
-        createGraphicsArea(0, 48, tsconf::windowWidth, 128);
+        Fl_Tabs tabs(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight<<1, tsconf::windowWidth-tsconf::largeWidgetHeight, tsconf::windowHeight-(tsconf::largeWidgetHeight<<1));
+        tabs.begin();
+            Fl_Group GraphicsGroup(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight*3, tsconf::windowWidth-tsconf::largeWidgetHeight, tsconf::windowHeight-(tsconf::largeWidgetHeight*3), "Graphics");
+            GraphicsGroup.begin();
+                createGraphicsArea(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight<<1, tsconf::windowWidth, 128);
+            GraphicsGroup.end();
+        tabs.end();
     confWindow.end();
 
     confWindow.show();
