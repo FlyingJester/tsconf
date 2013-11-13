@@ -7,6 +7,7 @@
 
 #include "tsconf-main.h"
 #include "tsconf-graphics.h"
+#include "tsconf-system.h"
 #include "tsconf-configuration.h"
 
 #include "t5.h"
@@ -78,12 +79,17 @@ int main(int argc, char *argv[]){
     Fl_Window confWindow(tsconf::windowWidth, tsconf::windowHeight, tsconf::windowTitle);
     confWindow.begin();
         createMenuBar();
-        Fl_Tabs tabs(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight<<1, tsconf::windowWidth-tsconf::largeWidgetHeight, tsconf::windowHeight-(tsconf::largeWidgetHeight<<1));
+        Fl_Tabs tabs(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight<<1, tsconf::windowWidth-(tsconf::smallWidgetHeight*2), tsconf::windowHeight-(tsconf::largeWidgetHeight<<1));
         tabs.begin();
-            Fl_Group GraphicsGroup(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight*3, tsconf::windowWidth-tsconf::largeWidgetHeight, tsconf::windowHeight-(tsconf::largeWidgetHeight*3), "Graphics");
+            Fl_Group GraphicsGroup(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight*3, tsconf::windowWidth-(tsconf::smallWidgetHeight*2), tsconf::windowHeight-(tsconf::largeWidgetHeight*3), "Graphics");
             GraphicsGroup.begin();
-                createGraphicsArea(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight<<1, tsconf::windowWidth, 128);
+                createGraphicsArea(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight*3, tsconf::windowWidth-(tsconf::smallWidgetHeight*2), 128);
             GraphicsGroup.end();
+
+            Fl_Group SystemGroup(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight*3, tsconf::windowWidth-(tsconf::smallWidgetHeight*2), tsconf::windowHeight-(tsconf::largeWidgetHeight*3), "System");
+            SystemGroup.begin();
+                createSystemArea(tsconf::smallWidgetHeight, tsconf::smallWidgetHeight*3, tsconf::windowWidth-(tsconf::smallWidgetHeight*2), 128);
+            SystemGroup.end();
         tabs.end();
     confWindow.end();
 
