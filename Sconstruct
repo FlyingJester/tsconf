@@ -5,7 +5,7 @@ defaultenv	= Environment(ENV = os.environ)
 
 linuxenv	= defaultenv.Clone(tools = ['default', 'textfile'], CCFLAGS = "-Werror=return-type -Wno-unused-local-typedefs -Wall -Wno-pointer-arith -mtune=native -mfpmath=both -flto -O2 -funroll-loops -std=c++11 -Wcast-align -pg -g", LINKFLAGS = "-I./")
 
-windowsenv 	= defaultenv.Clone(CCFLAGS = "/O2 /EHsc")
+windowsenv 	= defaultenv.Clone(CCFLAGS = "/O2 /EHsc /DWIN32")
 
 win32env	= windowsenv.Clone()
 win64env	= windowsenv.Clone()
@@ -46,4 +46,4 @@ else:
 
 tsconf_files = ["tsconf-main.cpp", "tsconf-graphics.cpp", "tsconf-configuration.cpp", "tsconf-system.cpp"]
 
-tsconf = currentenv.Program('tsconf', tsconf_files, LIBS=["fltk", "t5"])
+tsconf = currentenv.Program('tsconf', tsconf_files, LIBS=["fltk", "t5"], CPPPATH='./')
